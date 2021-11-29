@@ -10,9 +10,11 @@ on:
     branches: [ master ]
 
 jobs:
-  build_and_test:
+  workflow-deploy:
 
     runs-on: ubuntu-latest
+
+    environment: test-env
 
     # strategy:
     #   matrix:
@@ -48,3 +50,12 @@ jobs:
       run: npm install
     - name: Test project
       run: npm test
+    - name: Deploy to AWS EC2
+      uses: easingthemes/ssh-deploy@main
+      env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          # ARGS: "-rltgoDzvO --delete"
+          SOURCE: ""
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          EXCLUDE: "/dist/, /node_modules/"
